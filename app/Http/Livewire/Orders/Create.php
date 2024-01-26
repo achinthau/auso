@@ -33,6 +33,7 @@ class Create extends Component
     public $tags;
     public $creatingOrder = false;
     public $total = 0.0;
+    public $selectedOutletId;
 
     protected $listeners = ['showCreatingOrder' => 'showCreatingOrder'];
 
@@ -70,6 +71,19 @@ class Create extends Component
         'ticket.description.required_if' => 'The description field is required.',
     ];
 
+
+    public function updatedSelectedOutletId($outletId)
+    {
+        $outlet = Outlet::find($outletId);
+
+        if ($outlet && $outlet->type == 'new_type') {
+            // Load from new_items table
+            $this->items = NewItem::select('id', 'title', 'description')->get()->toArray();
+        } else {
+            // Load from items table
+            $this->items = Item::select('id', 'title', 'description')->get()->toArray();
+        }
+    }
 
     public function mount($leadId = null)
     {
@@ -294,4 +308,14 @@ class Create extends Component
         $this->resetErrorBag();
         $this->resetValidation();
     }
+
+
+    public function updatedTicketOutletId($value)
+    {
+        if ($value) {
+            // Logic to handle outlet change
+            // For example, load items from the main database based on the selected outlet
+        }
+    }
+
 }
