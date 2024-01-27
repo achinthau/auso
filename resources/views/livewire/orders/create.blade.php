@@ -19,7 +19,7 @@
 
                     </div>
                     <div class="px-2">
-                        <x-native-select label="Outlet" wire:model="ticket.outlet_id">
+                        <x-native-select label="Outlet" wire:model="selectedOutletId">
                             <option value="0" disabled>Select Outlet</option>
                             @foreach ($outlets as $outlet)
                                 <option value="{{ $outlet->id }}">{{ $outlet->title }}</option>
@@ -56,7 +56,7 @@
                     <div>
                         <x-toggle left-label="POS" label="CRM" wire:model="ticket.crm" />
                     </div>
-
+      
                     @if ($ticket->crm)
                         <div class="space-y-2">
                             <div class="flex mt-4 font-semibold text-sm">
@@ -67,11 +67,13 @@
                                 <div class="w-1/12 text-center"></div>
                             </div>
                             <hr>
+                          
                             @foreach ($ticketItems as $index => $ticketItem)
                                 @php
                                     $key = 'item-' . $index;
                                 @endphp
-                                <x-order.raw :ticketItem=$ticketItem :index=$index :extra=0 :key=$key />
+                                <x-order.raw :ticketItem=$ticketItem  :index=$index :extra=0 :key=$key />
+                                <!-- <x-order.raw :ticketItem=$ticketItem  :outletItemType="$outlet_item_type" :index=$index :extra=0 :key=$key /> -->
 
                                 @foreach ($ticketItem['extras'] as $subIndex => $extra)
                                     @php

@@ -48,6 +48,26 @@ Route::get('/items', function (Request $request) {
         ->get();
 })->name('api.items.index');
 
+Route::get('/items_new', function (Request $request) {
+    return ItemMaster::query()
+        // ->join('cities','cities.id','hotels.city_id')
+        ->selectRaw("id,descr,CONCAT ('Rs. ',ROUND(retail1,2)) as description ")
+        ->orderBy('descr')
+        ->where('item_status', 'like', '1')
+        ->when(
+            $request->search,
+            fn (Builder $query) => $query
+                ->where('descr', 'like', "%{$request->search}%")
+                ->orWhere('barcode', 'like', "%{$request->search}%")
+        )
+        ->when(
+            $request->exists('selected'),
+            fn (Builder $query) => $query->whereIn('id', $request->selected),
+            fn (Builder $query) => $query->limit(10)
+        )
+        ->get();
+})->name('api.items.index_new');
+
 Route::post('/call-answered', function (StoreAnsweredCall $request) {
     Log::info($request);
     $lead = Lead::where('contact_number', $request['ani'])->first();
