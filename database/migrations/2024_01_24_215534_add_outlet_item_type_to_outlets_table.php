@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('ac_outlets', function (Blueprint $table) {
+        Schema::table('outlets', function (Blueprint $table) {
             $table->string('outlet_item_type')->nullable()->comment(' values [old , new]');
         });
     }
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('ac_outlets', function (Blueprint $table) {
+        Schema::table('outlets', function (Blueprint $table) {
             $table->dropColumn('outlet_item_type')->nullable()->comment(' values [old , new]');
         });
     }
