@@ -53,7 +53,7 @@ Route::get('/items_new', function (Request $request) {
         // ->join('cities','cities.id','hotels.city_id')
         ->selectRaw("id,descr,CONCAT ('Rs. ',ROUND(retail1,2)) as description ")
         ->orderBy('descr')
-        ->where('item_status', 'like', '1')
+        ->whereIn('item_status', [1, 2])
         ->when(
             $request->search,
             fn (Builder $query) => $query

@@ -37,7 +37,7 @@
                 </div>
 
 
-                <div class="px-2">
+               <div class="px-2">
                     <x-textarea label="Special Instruction" wire:model.lazy="ticket.description"
                         placeholder="write customer's instruction here" />
                 </div>
@@ -47,9 +47,9 @@
                     Total Amount : {{ number_format($this->total, 2) }}
                 </div>
             </div>
-        </div>
+       </div>
 
-        @if ($ticket->ticket_category_id == 3)
+               @if ($ticket->ticket_category_id == 3)
             <hr>
             <div class="px-2 flex">
                 <div class="w-2/3">
@@ -72,8 +72,7 @@
                                 @php
                                     $key = 'item-' . $index;
                                 @endphp
-                                <x-order.raw :ticketItem=$ticketItem  :index=$index :extra=0 :key=$key />
-                                <!-- <x-order.raw :ticketItem=$ticketItem  :outletItemType="$outlet_item_type" :index=$index :extra=0 :key=$key /> -->
+                                <x-order.raw :ticketItem=$ticketItem :outletItemType="$outlet_item_type" :index=$index :extra=0 :key=$key />
 
                                 @foreach ($ticketItem['extras'] as $subIndex => $extra)
                                     @php

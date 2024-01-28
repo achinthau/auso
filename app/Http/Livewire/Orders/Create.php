@@ -35,6 +35,7 @@ class Create extends Component
     public $total = 0.0;
     public $selectedOutletId;
     public $outlet_item_type;
+    public $selectedOutlet;
 
     protected $listeners = ['showCreatingOrder' => 'showCreatingOrder'];
 
@@ -78,7 +79,7 @@ class Create extends Component
         $this->ticket->outlet_id = $outletId; // Synchronize with ticket.outlet_id
 
         $outlet = Outlet::find($outletId);
-        $outlet_item_type = $outlet->outlet_item_type;     
+        $this->outlet_item_type = $outlet->outlet_item_type;     
 
     }
 
@@ -87,17 +88,14 @@ class Create extends Component
         $this->ticket = new Ticket;
         $this->ticket->lead_id = $leadId;
 
-        $outlet = Outlet::first();
-        $outlet_item_type = $outlet->outlet_item_type;   
-        // dd($outlet_item_type);
-
+        $this->selectedOutlet = Outlet::first();
+        $this->outlet_item_type = $this->selectedOutlet->outlet_item_type;   
+        
         $this->categories = TicketCategory::with('subCategories')->order()->first();
         $this->subCategories = $this->categories->subCategories;
         $this->tags = [];
         $this->outlets = Outlet::select('id', 'title')->get();
         $this->items = Item::select('id', 'title', 'description')->get()->toArray();
-
-
 
         $this->addItem();
     }

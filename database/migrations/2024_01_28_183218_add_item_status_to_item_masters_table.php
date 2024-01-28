@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('ac_outlets', function (Blueprint $table) {
-            $table->string('outlet_item_type')->nullable()->comment(' values [old , new]');
+        Schema::table('ac_item_masters', function (Blueprint $table) {
+            $table->tinyInteger('item_status')->nullable()->comment('0=old, 1=new, 2=both');
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('ac_outlets', function (Blueprint $table) {
-            $table->dropColumn('outlet_item_type')->nullable()->comment(' values [old , new]');
+        Schema::table('ac_item_masters', function (Blueprint $table) {
+            $table->tinyInteger('item_status')->nullable()->comment('0=old, 1=new, 2=both');
         });
     }
 };
