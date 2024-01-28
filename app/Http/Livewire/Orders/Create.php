@@ -33,6 +33,9 @@ class Create extends Component
     public $tags;
     public $creatingOrder = false;
     public $total = 0.0;
+    public $selectedOutletId;
+    public $outlet_item_type;
+    public $selectedOutlet;
 
     protected $listeners = ['showCreatingOrder' => 'showCreatingOrder'];
 
@@ -71,18 +74,28 @@ class Create extends Component
     ];
 
 
+    public function updatedSelectedOutletId($outletId)
+    {
+        $this->ticket->outlet_id = $outletId; // Synchronize with ticket.outlet_id
+
+        $outlet = Outlet::find($outletId);
+        $this->outlet_item_type = $outlet->outlet_item_type;     
+
+    }
+
     public function mount($leadId = null)
     {
         $this->ticket = new Ticket;
         $this->ticket->lead_id = $leadId;
 
+        $this->selectedOutlet = Outlet::first();
+        $this->outlet_item_type = $this->selectedOutlet->outlet_item_type;   
+        
         $this->categories = TicketCategory::with('subCategories')->order()->first();
         $this->subCategories = $this->categories->subCategories;
         $this->tags = [];
         $this->outlets = Outlet::select('id', 'title')->get();
         $this->items = Item::select('id', 'title', 'description')->get()->toArray();
-
-
 
         $this->addItem();
     }
@@ -172,7 +185,6 @@ class Create extends Component
 
     public function updatedTicketItems($value, $name)
     {
-        // dd($name);
         $field = explode('.', $name);
 
         if ($field[1] == 'item_id') {
@@ -294,4 +306,14 @@ class Create extends Component
         $this->resetErrorBag();
         $this->resetValidation();
     }
+
+
+    public function updatedTicketOutletId($value)
+    {
+        if ($value) {
+            // Logic to handle outlet change
+            // For example, load items from the main database based on the selected outlet
+        }
+    }
+
 }
