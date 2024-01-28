@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('item_masters', function (Blueprint $table) {
+        Schema::connection('mysql')->table('item_masters', function (Blueprint $table) {
             $table->tinyInteger('item_status')->default(2)->nullable()->comment('0=old, 1=new, 2=both');
         });
     }
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('item_masters', function (Blueprint $table) {
+        Schema::connection('mysql')->table('item_masters', function (Blueprint $table) {
             $table->tinyInteger('item_status')->default(2)->nullable()->comment('0=old, 1=new, 2=both');
         });
     }
