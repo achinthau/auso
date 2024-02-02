@@ -53,7 +53,7 @@ class OrderSyncNewPosEmail extends Mailable
     public function content()
     {
         return new Content(
-            markdown: 'mails.order-sync-new-pos-email',
+            markdown: 'mails.order-new-sync-email',
             with: ['subject' => $this->subject, 'ticket' => $this->ticket, 'isSuccess' => $this->isSuccess],
         );
     }

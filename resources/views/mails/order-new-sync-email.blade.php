@@ -6,7 +6,7 @@ Pickup Order # : {{$ticket->bill_no}}
 @endif
 
 ## Order Details
-- **Order Number:** {{ $ticket->order_ref }}
+- **Order Number:** {{ $ticket->bill_no }}
 - **Order Date:** {{ $ticket->created_at }}
 - **Order Pickup:** {{ $ticket->due_at }}
 - **Outlet:** {{ $ticket->outlet->title }} - {{ $ticket->outlet->contact_no }}

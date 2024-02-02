@@ -38,6 +38,7 @@ class Create extends Component
     public $selectedOutletId;
     public $outlet_item_type;
     public $selectedOutlet;
+    public $generateBillNo;
 
     protected $listeners = ['showCreatingOrder' => 'showCreatingOrder'];
 
@@ -75,15 +76,6 @@ class Create extends Component
         'ticket.description.required_if' => 'The description field is required.',
     ];
 
-
-    public function updatedSelectedOutletId($outletId)
-    {
-        $this->ticket->outlet_id = $outletId; // Synchronize with ticket.outlet_id
-
-        $outlet = Outlet::find($outletId);
-        $this->outlet_item_type = $outlet->outlet_item_type;     
-
-    }
 
     public function mount($leadId = null)
     {
@@ -221,9 +213,7 @@ class Create extends Component
 
     public function save()
     {
-
-
-       
+      
         $this->validate();
         if ($this->ticket->ticket_category_id == 3 && $this->ticket->crm == 1) {
             $this->validate([
@@ -234,11 +224,11 @@ class Create extends Component
         $this->ticket->topic = $this->ticket->ticket_category_id == 3 ? "Order" : $this->ticket->topic;
         $this->ticket->lead_id = $this->leadId;
         $this->ticket->outlet_id = $this->selectedOutletId;
-
-    
+        $this->generateBillNo = $this->generateBillNo($this->ticket->outlet_id);
+        $this->ticket->bill_no = $this->generateBillNo;
+   
         $this->ticket->save();
         
-
         $this->ticket->logActivity("Created");
 
         if ($this->ticket->ticket_category_id == 3 && $this->ticket->crm) {
@@ -324,5 +314,20 @@ class Create extends Component
             // For example, load items from the main database based on the selected outlet
         }
     }
+
+
+    public function generateBillNo($outletId)
+    {
+        // Count the number of existing tickets for the given outlet_id and topic 'order'
+        $ticketCount = Ticket::where('topic', 'order')
+                            ->where('outlet_id', $outletId)
+                            ->count();
+
+        // The next bill number is the current count plus 1
+        $nextBillNo = $outletId . '-' . ($ticketCount + 1);
+
+        return $nextBillNo;
+    }
+
 
 }

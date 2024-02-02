@@ -1,15 +1,7 @@
 <div class="flex space-x-2" wire:key="{{$key}}">
     <div class="w-1/4 flex">
-    @if(($outletItemType ?? 'default') == 'old')
     <x-select wire:model="ticketItems.{{ $index }}.item_id" placeholder="Select Items" class="flex-1"
         :async-data="route('api.items.index')" option-label="descr" option-value="id" />
-    @elseif(($outletItemType ?? 'default') == 'new')
-        <x-select wire:model="ticketItems.{{ $index }}.item_id" placeholder="Select Items" class="flex-1"
-            :async-data="route('api.items.index_new')" option-label="descr" option-value="id" />
-    @else
-    <x-select wire:model="ticketItems.{{ $index }}.item_id" placeholder="Select Items" class="flex-1"
-        :async-data="route('api.items.index')" option-label="descr" option-value="id" />
-    @endif
     </div>
     <!-- <div>Outlet Item Type: {{ $outletItemType ?? 'default_value' }}</div> -->
 

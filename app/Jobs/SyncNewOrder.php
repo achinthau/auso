@@ -100,11 +100,13 @@ class SyncNewOrder implements ShouldQueue
     
              // Constructing the URL with query parameters
             $queryParams = http_build_query([
-                'ReceiverId' => '1-'+$this->ticket['outlet']['id'],
-                'OrderRef' => '12345',
+                'ReceiverId' => '1-001',
+                'OrderRef' => $this->ticket['bill_no'],
                 'ApiName' => 'neworder',
                 'SenderId' => 'S1',
             ]);
+            // 'ReceiverId' => '1-'+$this->ticket['outlet']['id'],
+
     
             // The base API URL from your configuration
             $baseUrl = config('auso.mycom_api_url') . "/orders";
@@ -120,7 +122,6 @@ class SyncNewOrder implements ShouldQueue
                 $this->ticket->synced_at = Carbon::now();
                 $this->ticket->is_synced = 1;
                 $this->ticket->ticket_status_id = 2;
-                $this->ticket->bill_no = $response->body();
 
                 $this->ticket->logActivity("Start Processing");
 
