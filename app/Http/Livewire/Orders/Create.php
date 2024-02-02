@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Orders;
 
 use App\Events\NotifyOrder;
 use App\Jobs\SyncOrder;
+use App\Jobs\SyncNewOrder;
 use App\Models\Item;
 use App\Models\ItemMaster;
 use App\Models\Outlet;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 use WireUi\Traits\Actions;
+use Illuminate\Support\Facades\Log;
 
 class Create extends Component
 {
@@ -219,19 +221,23 @@ class Create extends Component
 
     public function save()
     {
+
+
+       
         $this->validate();
-        if ($this->ticket->ticket_category_id == 3 && $this->ticket->crm) {
+        if ($this->ticket->ticket_category_id == 3 && $this->ticket->crm == 1) {
             $this->validate([
                 'ticketItems.*.item_id' => 'required',
-
             ]);
         }
+
         $this->ticket->topic = $this->ticket->ticket_category_id == 3 ? "Order" : $this->ticket->topic;
         $this->ticket->lead_id = $this->leadId;
+        $this->ticket->outlet_id = $this->selectedOutletId;
 
-
-        // dd($this->ticket);
+    
         $this->ticket->save();
+        
 
         $this->ticket->logActivity("Created");
 
@@ -269,11 +275,14 @@ class Create extends Component
         }
         // $this->ticket->createPosOrder();
         // Artisan::queue("sync:order " . $this->ticket->id);
-        //SyncOrder::dispatch($this->ticket)->onQueue('high');
 
         $order = Ticket::with('lead', 'category', 'subCategory', 'items', 'items.item', 'outlet')->where('id', $this->ticket->id)->first();
-        SyncOrder::dispatch($order)->onQueue('high');
-        
+
+     
+        // Log::debug($response);
+        // return;
+        SyncNewOrder::dispatch($order)->onQueue('high');
+             
 
         $this->creatingOrder = false;
         $this->resetForm();
