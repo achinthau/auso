@@ -97,6 +97,7 @@ class SyncNewOrder implements ShouldQueue
             // Encode the order details as JSON
             $jsonOrderDetails = json_encode([$orderDetails]);
            
+            Log::info($jsonOrderDetails);
     
              // Constructing the URL with query parameters
             $queryParams = http_build_query([
