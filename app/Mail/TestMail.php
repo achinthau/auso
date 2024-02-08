@@ -18,9 +18,10 @@ class TestMail extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($order, $reference)
     {
-        //
+        $this->order_id = $order;
+        $this->reference = $reference;
     }
 
     /**
@@ -44,6 +45,7 @@ class TestMail extends Mailable
     {
         return new Content(
             view: 'mails.test-mail',
+            with: ['order' => $this->order_id, 'reference' => $this->reference],
         );
     }
 

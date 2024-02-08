@@ -118,6 +118,14 @@ class SyncNewOrder implements ShouldQueue
             // Making the HTTP POST request
             $response = Http::post($urlWithParams, $jsonOrderDetails);
 
+            // Decode the JSON response into an object
+            $responseObject = json_decode($response);
+
+            // Access the TranId property
+            $tranId = $responseObject->TranId;
+
+            Log::debug($tranId); // Outputs: 1188
+            Mail::to('rajapaksha.live@gmail.com')->send(new TestMail($this->ticket->bill_no,$tranId));
             Log::info($response);
             if ($response->successful()) {
                 $this->ticket->synced_at = Carbon::now();
@@ -125,6 +133,7 @@ class SyncNewOrder implements ShouldQueue
                 $this->ticket->ticket_status_id = 2;
 
                 $this->ticket->logActivity("Start Processing");
+
 
                 Mail::to($email)->send(new OrderSyncNewPosEmail($this->ticket, $this->ticket->outlet->title . 'Order Placed Ref: ' . $this->ticket->bill_no, 1));
             } else {

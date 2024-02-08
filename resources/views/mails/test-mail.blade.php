@@ -5,6 +5,8 @@
   </head>
   <body>
     <h2>Test Email</h2>
-    <p>Test Email</p>
+    <p>## Order Details
+      - **Order Number:** {{ $order }}
+      - **Reference:** {{ $reference }}</p>
   </body>
 </html>
