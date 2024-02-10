@@ -46,6 +46,28 @@ class SyncNewOrder implements ShouldQueue
         $email = config('app.debug') ? "macorera@gmail.com" : "callcenter.kottugrand@gmail.com";
         try {
 
+            // Assuming $this->ticket['items'] contains the items to be mapped
+            $itemsMapped = $this->ticket['items']->map(function ($item, $index) {
+                return [
+                    "LINE_NO" => (string)($index + 1), // Starting index from 1
+                    "TRAN_TYPE" => "S",
+                    "MENU_CODE" => $item->item['item_ref'], // Make sure to adjust this based on actual data structure
+                    "UNIT_CODE" => "1",
+                    "TRAN_DESC" => $item->item['descr'], // Adjusted for object access
+                    "TRAN_QTY" => $item->qty,
+                    "UNIT_PRICE" => $item->unit_price,
+                    "TRAN_AMT" => $item->line_total,
+                    "DISC_AMT" => 0,
+                    "TAX_AMOUNT" => 0,
+                    "NET_AMT" => $item->line_total,
+                    "SIDE_ITEM" => [],
+                    "MODIFIERS" => [],
+                ];
+            })->toArray(); // Convert the result back to an array if needed
+            
+         
+
+
             $orderDetails = [
                 "COMMAND_TYPE" => "NEW",
                 "LOCATION_ID" => $this->ticket['outlet']['contact_no'],
@@ -73,32 +95,16 @@ class SyncNewOrder implements ShouldQueue
                     "CUST_INFO3" => "Office # 701",
                     "CUST_INSTRUCTIONS" => "Knock the door"
                 ],
+                "ITEMS" => $itemsMapped
+                
             ];
-    
-            // Assuming $this->ticket['items'] contains the items to be mapped
-            $itemsMapped = $this->ticket['items']->map(function ($item, $index) {
-                return [
-                    "LINE_NO" => (string)($index + 1), // Starting index from 1
-                    "TRAN_TYPE" => "S",
-                    "MENU_CODE" => $item->item['item_ref'], // Make sure to adjust this based on actual data structure
-                    "UNIT_CODE" => "1",
-                    "TRAN_DESC" => $item->item['descr'], // Adjusted for object access
-                    "TRAN_QTY" => $item->qty,
-                    "UNIT_PRICE" => $item->unit_price,
-                    "TRAN_AMT" => $item->line_total,
-                    "DISC_AMT" => 0,
-                    "TAX_AMOUNT" => 0,
-                    "NET_AMT" => $item->line_total,
-                    "SIDE_ITEM" => [],
-                    "MODIFIERS" => [],
-                ];
-            })->toArray(); // Convert the result back to an array if needed
-            
+        
             // Encode the order details as JSON
             $jsonOrderDetails = json_encode([$orderDetails]);
-           
-            Log::info($jsonOrderDetails);
-    
+                    
+            Log::info('Order Details :'.$jsonOrderDetails);
+
+
              // Constructing the URL with query parameters
             $queryParams = http_build_query([
                 'ReceiverId' => '1-001',
