@@ -62,7 +62,7 @@ class SyncNewOrder implements ShouldQueue
                     "DELIVERY_CHARGE" => 0,
                     "TAX_AMOUNT" => 0,
                     "NET_AMT" => 133.0,
-                    "REMARKS" => "Something..."
+                    "REMARKS" => $this->ticket['description']
                 ],
                 "CUSTOMER" => [
                     "CUST_INFOENABLE" => "True",
