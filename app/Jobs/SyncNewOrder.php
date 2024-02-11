@@ -74,7 +74,7 @@ class SyncNewOrder implements ShouldQueue
                 "AUTH_KEY" => "TXlDb206UmVzdFBvczEyMw==", // Example, use actual auth key
                 "HEADER" => [
                     "ORDER_SOURCE" => "CC",
-                    "ORDER_REF" => $this->ticket['order_ref'] ?? "ORDREF30", // Example, adjust as needed
+                    "ORDER_REF" => $this->ticket['bill_no'] ?? "ORDREF30", // Example, adjust as needed
                     "BILL_DATE" => now()->format('Y-m-d'),
                     "BILL_TIME" => now()->format('H:i'),
                     "BILL_AMT" => $this->ticket['order_total'],
