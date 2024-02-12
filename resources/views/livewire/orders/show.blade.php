@@ -42,9 +42,10 @@
                         @canany(['is-has-outlet', 'client-admin', 'is-super-admin'])
                             @if ($ticket->ticket_status_id == 1 && !$ticket->is_synced)
                                 <x-input placeholder="Order Ref" wire:model.defer="orderRef" />
+                                <!-- Move the Outlet Order Ref inside the condition -->
+                                Outlet Order Ref: {{ $ticket->bill_no }}
                             @endif
                         @endcanany
-                        Outlet Order Ref :{{ $ticket->bill_no }}
                     </div>
                 </div>
                 @if ($ticket->description)
