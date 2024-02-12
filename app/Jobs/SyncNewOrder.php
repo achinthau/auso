@@ -63,7 +63,7 @@ class SyncNewOrder implements ShouldQueue
                     "SIDE_ITEM" => [],
                     "MODIFIERS" => [],
                 ];
-            })->toArray(); // Convert the result back to an array if needed
+            }); // Convert the result back to an array if needed
             
          
 
