@@ -74,7 +74,7 @@ class SyncNewOrder implements ShouldQueue
                 "AUTH_KEY" => "TXlDb206UmVzdFBvczEyMw==", // Example, use actual auth key
                 "HEADER" => [
                     "ORDER_SOURCE" => "CC",
-                    "ORDER_REF" => $this->ticket['bill_no'] ?? "ORDREF30", // Example, adjust as needed
+                    "ORDER_REF" => $this->ticket['bill_no'] ?? "TESTORDER", // Example, adjust as needed
                     "BILL_DATE" => now()->format('Y-m-d'),
                     "BILL_TIME" => now()->format('H:i'),
                     "BILL_AMT" => $this->ticket['order_total'],
@@ -89,7 +89,7 @@ class SyncNewOrder implements ShouldQueue
                 "CUSTOMER" => [
                     "CUST_INFOENABLE" => "True",
                     "CUST_NUM" => $this->ticket['lead']['contact_number'] ?? "123456789", // Example, adjust as needed
-                    "CUST_NAME" => $this->ticket['lead']['full_name'] ?? "Aman", // Example, adjust as needed
+                    "CUST_NAME" => $this->ticket['lead']['full_name'] ?? "Test", // Example, adjust as needed
                     "CUST_INFO1" => "Dubai - Bussiness bay",
                     "CUST_INFO2" => "Oxford tower",
                     "CUST_INFO3" => "Office # 701",
@@ -100,7 +100,7 @@ class SyncNewOrder implements ShouldQueue
             ];
         
             // Encode the order details as JSON
-            $jsonOrderDetails = json_encode([$orderDetails]);
+            $jsonOrderDetails = json_encode($orderDetails);
                     
             Log::info('Order Details :'.$jsonOrderDetails);
 
