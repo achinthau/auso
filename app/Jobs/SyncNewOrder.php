@@ -122,7 +122,10 @@ class SyncNewOrder implements ShouldQueue
             $urlWithParams = "{$baseUrl}?{$queryParams}";
     
             // Making the HTTP POST request
-            $response = Http::post($urlWithParams, $jsonOrderDetails);
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ])->post($urlWithParams, $jsonOrderDetails);
 
             // Decode the JSON response into an object
             $responseObject = json_decode($response);
