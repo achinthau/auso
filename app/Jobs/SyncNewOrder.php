@@ -51,10 +51,10 @@ class SyncNewOrder implements ShouldQueue
             // Assuming $this->ticket['items'] contains the items to be mapped
             $itemsMapped = $this->ticket['items']->map(function ($item, $index) {
                  // Calculate discount amount
-                 $discountAmount = ($item->line_total) * ($item->item['disc_per'] / 100);
+                 $discountAmount = ($item->unit_price * $item->qty ) * ($item->item['disc_per'] / 100);
 
                  // Calculate net amount (lineTotal - discount)
-                 $netAmount = $item->line_total - $discountAmount;
+                 $netAmount =  ($item->unit_price * $item->qty ) - $discountAmount;
                 return [
                     "LINE_NO" => (string)($index + 1), // Starting index from 1
                     "TRAN_TYPE" => "S",
