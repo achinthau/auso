@@ -23,7 +23,7 @@ class SyncNewOrder implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public Ticket $ticket;
-
+   
     /**
      * Create a new job instance.
      *
@@ -44,10 +44,17 @@ class SyncNewOrder implements ShouldQueue
         // $this->ticket->createPosOrder();
 
         $email = config('app.debug') ? "macorera@gmail.com" : "callcenter.kottugrand@gmail.com";
-        try {
+      
 
+        try {
+          
             // Assuming $this->ticket['items'] contains the items to be mapped
             $itemsMapped = $this->ticket['items']->map(function ($item, $index) {
+                 // Calculate discount amount
+                 $discountAmount = ($item->line_total) * ($item->item['disc_per'] / 100);
+
+                 // Calculate net amount (lineTotal - discount)
+                 $netAmount = $item->line_total - $discountAmount;
                 return [
                     "LINE_NO" => (string)($index + 1), // Starting index from 1
                     "TRAN_TYPE" => "S",
@@ -57,16 +64,18 @@ class SyncNewOrder implements ShouldQueue
                     "TRAN_QTY" => $item->qty,
                     "UNIT_PRICE" => $item->unit_price,
                     "TRAN_AMT" => $item->line_total,
-                    "DISC_AMT" => 0,
+                    "DISC_AMT" =>  $discountAmount,
                     "TAX_AMOUNT" => 0,
-                    "NET_AMT" => $item->line_total,
+                    "NET_AMT" => $netAmount,
                     "SIDE_ITEM" => [],
                     "MODIFIERS" => [],
                 ];
             }); // Convert the result back to an array if needed
-            
-         
+          
 
+            $totalNetAmount = $itemsMapped->reduce(function ($carry, $item) {
+                return $carry + $item['NET_AMT'];
+            }, 0); // Initialize carry with 0
 
             $orderDetails = [
                 "COMMAND_TYPE" => "NEW",
@@ -83,17 +92,17 @@ class SyncNewOrder implements ShouldQueue
                     "DISCOUNT_AMT" => 0,
                     "DELIVERY_CHARGE" => 0,
                     "TAX_AMOUNT" => 0,
-                    "NET_AMT" => 133.0,
+                    "NET_AMT" => $totalNetAmount,
                     "REMARKS" => $this->ticket['description']
                 ],
                 "CUSTOMER" => [
                     "CUST_INFOENABLE" => "True",
                     "CUST_NUM" => $this->ticket['lead']['contact_number'] ?? "123456789", // Example, adjust as needed
                     "CUST_NAME" => $this->ticket['lead']['full_name'] ?? "Test", // Example, adjust as needed
-                    "CUST_INFO1" => "Dubai - Bussiness bay",
-                    "CUST_INFO2" => "Oxford tower",
-                    "CUST_INFO3" => "Office # 701",
-                    "CUST_INSTRUCTIONS" => "Knock the door"
+                    "CUST_INFO1" => "",
+                    "CUST_INFO2" => "",
+                    "CUST_INFO3" => "",
+                    "CUST_INSTRUCTIONS" => ""
                 ],
                 "ITEMS" => $itemsMapped
                 
@@ -104,8 +113,7 @@ class SyncNewOrder implements ShouldQueue
                     
             Log::info('Order Details :'.$jsonOrderDetails);
 
-
-             // Constructing the URL with query parameters
+            // Constructing the URL with query parameters
             $queryParams = http_build_query([
                 'ReceiverId' => '1-001',
                 'OrderRef' => $this->ticket['bill_no'],
