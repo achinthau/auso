@@ -113,15 +113,25 @@ class SyncNewOrder implements ShouldQueue
                     
             Log::info('Order Details :'.$jsonOrderDetails);
 
+            $bill_no = $this->ticket['bill_no'];
+            $dash_position = strpos($bill_no, "-");
+            $outlet_id = substr($bill_no, 0, $dash_position);
+            if (strlen($outlet_id) < 10) {
+                $outlet_id = str_pad($outlet_id, 3, "0", STR_PAD_LEFT); // Two leading zeros
+            } else {
+                $outlet_id = str_pad($outlet_id, 2, "0", STR_PAD_LEFT); // One leading zero
+            }
+            Log::info('Outlet ID :'.$outlet_id);
             // Constructing the URL with query parameters
             $queryParams = http_build_query([
-                'ReceiverId' => '1-001',
+                'ReceiverId' =>  sprintf('1-%s', $outlet_id),
                 'OrderRef' => $this->ticket['bill_no'],
-                'ApiName' => 'neworder',
-                'SenderId' => 'S1',
+                'Function' => 'neworder',
+                'SenderId' => 'S2',
             ]);
             // 'ReceiverId' => '1-'+$this->ticket['outlet']['id'],
 
+            Log::info('Receiver ID :'. sprintf('1-%s', $outlet_id));
     
             // The base API URL from your configuration
             $baseUrl = config('auso.mycom_api_url') . "/orders";
@@ -132,15 +142,22 @@ class SyncNewOrder implements ShouldQueue
             // Making the HTTP POST request
             $response = Http::post($urlWithParams, $jsonOrderDetails);
 
+            if ($response->successful()) {
+                Log::info('Request successful. Response code: ' . $response->status());
+            } elseif ($response->failed()) { 
+                // Choose appropriate level (warning, error, critical) based on severity
+                Log::error('Request failed. Response code: ' . $response->status());
+                Log::debug('Response body:', [$response->body()]); // For debugging
+            }
+
             // Decode the JSON response into an object
             $responseObject = json_decode($response);
 
             // Access the TranId property
             $tranId = $responseObject->TranId;
 
-            Log::debug($tranId); // Outputs: 1188
-            Mail::to('rajapaksha.live@gmail.com')->send(new TestMail($this->ticket->bill_no,$tranId));
-            Log::info($response);
+            // Log::debug('Response : ' .$responseObject); // Outputs: 1188
+            // Log::info($response);
             if ($response->successful()) {
                 $this->ticket->synced_at = Carbon::now();
                 $this->ticket->is_synced = 1;
