@@ -131,10 +131,10 @@ class SyncNewOrder implements ShouldQueue
     
             // The base API URL from your configuration
             $baseUrl = config('auso.mycom_api_url') . "/orders";
-    
+           
             // Complete URL with query parameters
             $urlWithParams = "{$baseUrl}?{$queryParams}";
-    
+            Log::info($urlWithParams);
             // Making the HTTP POST request
             $response = Http::post($urlWithParams, $jsonOrderDetails);
 
