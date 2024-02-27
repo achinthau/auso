@@ -114,13 +114,9 @@ class SyncNewOrder implements ShouldQueue
             Log::info('Order Details :'.$jsonOrderDetails);
 
             $bill_no = $this->ticket['bill_no'];
-            $dash_position = strpos($bill_no, "-");
-            $outlet_id = substr($bill_no, 0, $dash_position);
-            if (strlen($outlet_id) < 10) {
-                $outlet_id = str_pad($outlet_id, 3, "0", STR_PAD_LEFT); // Two leading zeros
-            } else {
-                $outlet_id = str_pad($outlet_id, 2, "0", STR_PAD_LEFT); // One leading zero
-            }
+            $parts = explode('-', $bill_no);
+            $outlet_id = $this->ticket['outlet']['contact_no']; 
+
             Log::info('Outlet ID :'.$outlet_id);
             // Constructing the URL with query parameters
             $queryParams = http_build_query([
