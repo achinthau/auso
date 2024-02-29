@@ -25,7 +25,7 @@ class Show extends Component
         'lead.contact_number' => 'required',
         'lead.skill.skillname' => 'required',
         'lead.first_name' => 'required',
-        'lead.last_name' => 'required',
+        'lead.last_name' => 'nullable',
         'lead.nic' => 'nullable',
         'lead.address_line_1' => 'nullable',
         'lead.address_line_2' => 'nullable',
@@ -56,7 +56,16 @@ class Show extends Component
 
     // public function refreshTimeline()
     // {
-    //     $this->callLogs = QueueCount::where('ani', $this->lead->contact_number)->where('status', 2)->orderBy('date')->get();
+    //     $lead = $this->lead->load('tickets','tickets.category','tickets.status','tickets.outlet','orders','orders.items');
+    //     $this->callLogs = QueueCount::with('agentInfo')->where(function ($query) use ($lead) {
+    //         $query->orWhere('ani', $lead->contact_number)
+    //             ->orWhere('dnis', $lead->contact_number);
+    //     })->where('status', 2)->orderBy('date')->get();
+    //     $this->outCallLogs = CallCount::with('agentInfo')->where(function ($query) use ($lead) {
+    //         $query->orWhere('dnis', $lead->contact_number);
+    //     })->where('direction', 'out')->orderBy('date')->get();
+
+
     //     $this->timelineLogs = $this->callLogs->map(function ($item) {
 
     //         return [
@@ -64,17 +73,32 @@ class Show extends Component
     //             'created_at' => $item->date,
     //             'created_date' => $item->date->format('F jS, Y'),
     //             'created_time' => $item->date->format('h:i A'),
-    //             'created_by' => $item->agentInfo->full_name,
+    //             'created_by' => $item->agentInfo ? $item->agentInfo->full_name : 'System Agent',
     //             'icon' => 'icon-phone',
     //             'bg-color' => 'bg-blue-200',
     //             'icon-color' => 'text-blue-600 dark:text-blue-400',
     //         ];
-    //     })->merge($this->lead->tickets->map(function ($item) {
+    //     })->merge($this->outCallLogs->map(function ($item) {
+    //         return [
+    //             'title' => 'Outgoing Call',
+    //             'created_at' => $item->date,
+    //             'created_date' => $item->date->format('F jS, Y'),
+    //             'created_time' => $item->date->format('h:i A'),
+    //             'created_by' => $item->agentInfo ? $item->agentInfo->full_name : 'System Agent',
+    //             'icon' => 'icon-phone-out',
+    //             'bg-color' => 'bg-blue-200',
+    //             'icon-color' => 'text-blue-600 dark:text-blue-400',
+    //         ];
+    //     }))->merge($this->lead->tickets->map(function ($item) {
     //         return [
     //             'id' => $item->id,
     //             'component' => $item->ticket_category_id == 3 ? 'orders.show' : 'tickets.show',
     //             'action' => $item->ticket_category_id == 3 ? 'openTicket' : 'openTicket',
     //             'title' => $item->ticket_category_id == 3 ? 'Order' : 'Ticket',
+    //             'outlet' => $item->outlet ? $item->outlet->title  : false,
+    //             'category' => $item->category->title,
+    //             'status' => $item->status->title,
+    //             'order_total' =>  $item->ticket_category_id == 3 ? $item->order_total  : 0,
     //             'created_at' => $item->created_at->format('Y-m-d H:i:s'),
     //             'created_date' => $item->created_at->format('F jS, Y'),
     //             'created_time' => $item->created_at->format('h:i A'),
@@ -154,6 +178,7 @@ class Show extends Component
         // Sort the merged collection by created_at
         $this->timelineLogs = $timelineLogs->sortByDesc('created_at');
     }
+
 
     public function save()
     {
