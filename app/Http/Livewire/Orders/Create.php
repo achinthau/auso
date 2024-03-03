@@ -40,6 +40,7 @@ class Create extends Component
     public $selectedOutlet;
     public $generateBillNo;
 
+
     protected $listeners = ['showCreatingOrder' => 'showCreatingOrder'];
 
     protected $rules  = [
@@ -214,7 +215,13 @@ class Create extends Component
     public function save()
     {
 
-    
+    $this->validate([ 
+    'ticket.description' => 'required_if:ticket.ticket_category_id,1,2',
+    'selectedOutletId' => 'required|integer|min:1|exists:outlets,id',
+    'ticket.ticket_category_id' => 'required|exists:ticket_categories,id',
+    'ticket.ticket_sub_category_id' => 'required|exists:ticket_sub_categories,id',
+    'ticket.tags' => 'required|array|min:1',
+    ]);
         
         // $this->validate();
         if ($this->ticket->ticket_category_id == 3 && $this->ticket->crm == 1) {

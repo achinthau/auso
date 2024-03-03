@@ -9,7 +9,7 @@ Pickup Order # : {{$ticket->bill_no}}
 - **Order Number:** {{ $ticket->order_ref }}
 - **Order Date:** {{ $ticket->created_at }}
 - **Order Pickup:** {{ $ticket->due_at }}
-- **Outlet:** {{ $ticket->outlet->title }} - {{ $ticket->outlet->contact_no }}
+- **Outlet:** {{ $ticket->outlet?->title }} - {{ $ticket->outlet?->contact_no }}
 - **Customer Name:** {{ $ticket->lead->full_name }}
 - **Contact Number:** {{ $ticket->lead->contact_number }}
 
