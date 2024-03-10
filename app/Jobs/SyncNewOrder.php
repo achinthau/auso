@@ -48,10 +48,17 @@ class SyncNewOrder implements ShouldQueue
 
         try {
           
-            // Assuming $this->ticket['items'] contains the items to be mapped
-            $itemsMapped = $this->ticket['items']->map(function ($item, $index) {
-                 // Calculate discount amount
-                 $discountAmount = ($item->unit_price * $item->qty ) * ($item->item['disc_per'] / 100);
+                // Assuming $this->ticket['items'] contains the items to be mapped
+                $itemsMapped = $this->ticket['items']->map(function ($item, $index) {
+                // Calculate discount amount
+                $discountAmount = ($item->unit_price * $item->qty ) * ($item->item['disc_per'] / 100);
+
+                $itemModifier = [
+                    "LINE_NO" => (string)($index + 1) . ".01", 
+                    "TRAN_DESC" => $this->ticket['description'] , 
+                    "PICKUP_TIME" => $this->ticket['due_at'] 
+                ];
+            
 
                  // Calculate net amount (lineTotal - discount)
                  $netAmount =  ($item->unit_price * $item->qty ) - $discountAmount;
@@ -72,7 +79,7 @@ class SyncNewOrder implements ShouldQueue
                 ];
             }); // Convert the result back to an array if needed
           
-
+            
             $totalNetAmount = $itemsMapped->reduce(function ($carry, $item) {
                 return $carry + $item['NET_AMT'];
             }, 0); // Initialize carry with 0
