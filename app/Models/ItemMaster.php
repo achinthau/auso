@@ -9,6 +9,12 @@ class ItemMaster extends Model
 {
     use HasFactory;
 
-    
+    protected $fillable = [
+        'item_ref', 
+        'barcode', 
+        'descr', 
+        'retail1',
+        // Add any other attributes you need to be mass assignable
+    ];
 
 }

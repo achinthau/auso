@@ -13,7 +13,9 @@ class UpdateItemPricesCommand extends Command
 
     public function handle()
     {
-        $response = Http::withHeaders([
+        $response = Http::withOptions([
+        'verify' => false, // Disable SSL certificate verification
+        ])->withHeaders([
             'Content-Type' => 'application/json',
         ])->post('https://web2.mycomsys.com:8803/api/v1/opm/Download_ItemMaster', [
             'DATA' => json_encode([
@@ -22,20 +24,51 @@ class UpdateItemPricesCommand extends Command
                 'loc_code' => '001'
             ])
         ]);
-        
-    
+
+            \Log::info("Full API response", [          
+            'body' => $response->body(),
+        ]);
+
+        $responseBody = $response->body(); // Get the raw JSON string
+        $jsonResponse = json_decode($responseBody, true); // Decode to an associative array
+
+        \Log::info("Decoded API response", [          
+            'body' => $jsonResponse,
+        ]);
+
         if ($response->successful()) {
-            $data = $response->json()['DATA'];
+       
+            if (isset($jsonResponse['DATA'])) {
+                $data = $jsonResponse['DATA'];
 
-            foreach ($data as $itemData) {
-                $item = Item::where('barcode', $itemData['item_code'])->first();
+                foreach ($data as $itemData) {
+                    // Use firstOrCreate to find an existing item by barcode or create a new one
+                        $item = ItemMaster::firstOrCreate(
+                            ['item_ref' => $itemData['item_code']], // Conditions to find the existing item
+                            [
+                                // Default values for new item creation
+                                'barcode' => $itemData['item_code'],
+                                'descr' => $itemData['item_name'],
+                                'retail1' => $itemData['item_price'],
+                                'item_ref' => $itemData['item_code'],
+                                // Add more fields as necessary
+                            ]
+                        );
 
-                if ($item) {
-                    $item->update(['retail1' => $itemData['item_price']]);
+                        // If the item was found, it might still need its price updated
+                        if (!$item->wasRecentlyCreated) {
+                            $item->update(['retail1' => $itemData['item_price']]);
+                        }
                 }
+    
+                $this->info('Item prices updated successfully.');
+            } else {
+                // Handle unexpected response structure or log for debugging
+                \Log::error("Unexpected response structure", ['response' => $jsonResponse]);
+                
             }
-
-            $this->info('Item prices updated successfully.');
+            
+          
         } else {
             $this->error('Failed to fetch item data.');
         }
