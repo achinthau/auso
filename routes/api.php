@@ -118,3 +118,16 @@ Route::post('/call-disconnected', function (Request $request) {
         Cache::decrement($request['queuename']."-current-call-count");
     }
 });
+
+
+Route::post('/update-order-info',  function (Request $request) {
+    $data = $request->json()->all();
+
+    // Update order status in your database
+    $order = Order::findOrFail($data['order_id']);
+    $order->status = $data['status'];
+    $order->save();
+
+    return response()->json(['message' => 'Order status updated successfully']);
+
+});

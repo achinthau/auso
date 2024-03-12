@@ -16,13 +16,13 @@ class UpdateItemPricesCommand extends Command
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post('https://web2.mycomsys.com:8803/api/v1/opm/Download_ItemMaster', [
-            'DATA' => [
+            'DATA' => json_encode([
                 'auth_key' => 'TXlDb206UmVzdFBvczEyMw==',
                 'client_id' => 80939,
                 'loc_code' => '001'
-            ]
+            ])
         ]);
-    
+        
     
         if ($response->successful()) {
             $data = $response->json()['DATA'];
