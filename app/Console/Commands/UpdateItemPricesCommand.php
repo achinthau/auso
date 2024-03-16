@@ -25,19 +25,35 @@ class UpdateItemPricesCommand extends Command
             ])
         ]);
 
-            \Log::info("Full API response", [          
-            'body' => $response->body(),
-        ]);
-
-        $responseBody = $response->body(); // Get the raw JSON string
-        $jsonResponse = json_decode($responseBody, true); // Decode to an associative array
-
-        \Log::info("Decoded API response", [          
-            'body' => $jsonResponse,
-        ]);
-
+  
         if ($response->successful()) {
        
+   
+            $responseBody = $response->body(); // Get the raw JSON string
+            $jsonResponse = json_decode($responseBody, true); // Decode to an associative array
+
+            \Log::info("Full API response", [          
+                'body' => $jsonResponse
+            ]);
+    
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('JSON decoding error: ' . json_last_error_msg());
+            }
+            
+    
+            \Log::info("Decoded API response", [          
+                'body' => $jsonResponse,
+            ]);
+
+            if (isset($jsonResponse['DATA'])) {
+                $data = $jsonResponse['DATA'];
+                foreach ($data as $itemData) {
+                    // Process each item, for example, update or create records in the database
+                }
+            } else {
+                \Log::error('Unexpected JSON structure or DATA key missing', ['response' => $jsonResponse]);
+            }
+
             if (isset($jsonResponse['DATA'])) {
                 $data = $jsonResponse['DATA'];
 
