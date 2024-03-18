@@ -55,7 +55,7 @@ class SyncNewOrder implements ShouldQueue
 
                 $itemModifier = [
                     "LINE_NO" => (string)($index + 1) . ".01", 
-                    "TRAN_DESC" => $this->ticket['description'] , 
+                    "TRAN_DESC" => $item->item_remarks , 
                     "PICKUP_TIME" => $this->ticket['due_at'] 
                 ];
             
@@ -75,7 +75,7 @@ class SyncNewOrder implements ShouldQueue
                     "TAX_AMOUNT" => 0,
                     "NET_AMT" => $netAmount,
                     "SIDE_ITEM" => [],
-                    "MODIFIERS" => [],
+                    "MODIFIERS" => [$itemModifier],
                 ];
             }); // Convert the result back to an array if needed
           

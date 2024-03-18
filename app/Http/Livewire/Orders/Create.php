@@ -153,6 +153,7 @@ class Create extends Component
             'size_id' => null,
             'unit_price' => 0.0,
             'qty' => 1,
+            'item_remarks' => '', 
         ];
 
         if (!is_numeric($parent)) {
@@ -252,6 +253,7 @@ class Create extends Component
                         'qty'  => $_ticketItem['qty'],
                         'unit_price'  => $_ticketItem['unit_price'],
                         'line_total'  => $_ticketItem['unit_price'] * $_ticketItem['qty'],
+                        'item_remarks'  => $_ticketItem['item_remarks'],
                     ]
                 );
 
@@ -272,9 +274,6 @@ class Create extends Component
                 }
             }
         }
-
-        // $this->ticket->createPosOrder();
-        // Artisan::queue("sync:order " . $this->ticket->id);
 
         $order = Ticket::with('lead', 'category', 'subCategory', 'items', 'items.item', 'outlet')->where('id', $this->ticket->id)->first();
        

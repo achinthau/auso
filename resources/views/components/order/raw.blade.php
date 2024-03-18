@@ -14,6 +14,11 @@
     <div class="text-sm w-1/12  text-center my-auto">
         {{number_format($ticketItem['unit_price'] * $ticketItem['qty'],2)}}
     </div>
+
+    <div class="text-sm w-2/12 ">
+        <input type="text" wire:model.defer="ticketItems.{{ $index }}.item_remarks" class="form-control" placeholder="Item Remarks" maxlength="30">
+    </div>
+
     <div class="text-sm w-1/12  flex space-x-4  justify-right my-auto">
         <div class="my-auto cursor-pointer">
             <svg wire:click="removeItem({{ $index }})" class="w-6 h-6 text-gray-400 hover:text-red-500"

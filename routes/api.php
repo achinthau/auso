@@ -120,14 +120,15 @@ Route::post('/call-disconnected', function (Request $request) {
 });
 
 
-Route::post('/update-order-info',  function (Request $request) {
-    $data = $request->json()->all();
+// Route::post('/update-order-info',  function (Request $request) {
+//    // $data = $request->json()->all();
 
-    // Update order status in your database
-    $order = Order::findOrFail($data['order_id']);
-    $order->status = $data['status'];
-    $order->save();
+//     // Update order status in your database
+//     // $order = Order::findOrFail($data['order_id']);
+//     // $order->status = $data['status'];
+//     // $order->save();
 
-    return response()->json(['message' => 'Order status updated successfully']);
+//     return response()->json(['message' => 'Order status updated successfully']);
 
-});
+// });
+
