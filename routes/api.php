@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PosOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,15 +121,16 @@ Route::post('/call-disconnected', function (Request $request) {
 });
 
 
-// Route::post('/update-order-info',  function (Request $request) {
-//    // $data = $request->json()->all();
+Route::post('/update-order-info',  function (Request $request) {
+   // $data = $request->json()->all();
 
-//     // Update order status in your database
-//     // $order = Order::findOrFail($data['order_id']);
-//     // $order->status = $data['status'];
-//     // $order->save();
+    // Update order status in your database
+    // $order = Order::findOrFail($data['order_id']);
+    // $order->status = $data['status'];
+    // $order->save();
 
-//     return response()->json(['message' => 'Order status updated successfully']);
+    return response()->json(['message' => 'Order status updated successfully']);
 
-// });
+});
 
+ Route::post('/order/status_update', [PosOrderController::class, 'store']);
