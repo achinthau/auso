@@ -118,13 +118,13 @@ class SyncNewOrder implements ShouldQueue
             // Encode the order details as JSON
             $jsonOrderDetails = json_encode($orderDetails);
                     
-            Log::info('Order Details :'.$jsonOrderDetails);
+            //Log::info('Order Details :'.$jsonOrderDetails);
 
             $bill_no = $this->ticket['bill_no'];
             $parts = explode('-', $bill_no);
             $outlet_id = $this->ticket['outlet']['contact_no']; 
 
-            Log::info('Outlet ID :'.$outlet_id);
+            //Log::info('Outlet ID :'.$outlet_id);
             // Constructing the URL with query parameters
             $queryParams = http_build_query([
                 'ReceiverId' =>  sprintf('1-%s', $outlet_id),
@@ -134,14 +134,14 @@ class SyncNewOrder implements ShouldQueue
             ]);
             // 'ReceiverId' => '1-'+$this->ticket['outlet']['id'],
 
-            Log::info('Receiver ID :'. sprintf('1-%s', $outlet_id));
+            //Log::info('Receiver ID :'. sprintf('1-%s', $outlet_id));
     
             // The base API URL from your configuration
             $baseUrl = config('auso.mycom_api_url') . "/orders";
            
             // Complete URL with query parameters
             $urlWithParams = "{$baseUrl}?{$queryParams}";
-            Log::info($urlWithParams);
+            //Log::info($urlWithParams);
             // Making the HTTP POST request
             $response = Http::post($urlWithParams, $jsonOrderDetails);
 
@@ -154,10 +154,10 @@ class SyncNewOrder implements ShouldQueue
             }
 
             // Decode the JSON response into an object
-            $responseObject = json_decode($response);
+            //$responseObject = json_decode($response);
 
             // Access the TranId property
-            $tranId = $responseObject->TranId;
+            //$tranId = $responseObject->TranId;
 
             // Log::debug('Response : ' .$responseObject); // Outputs: 1188
             // Log::info($response);
@@ -181,7 +181,7 @@ class SyncNewOrder implements ShouldQueue
             Mail::to($email)->send(new OrderSynFailEmail($this->ticket, 'POS Middleware Connector Down Ref: ' . $this->ticket->order_ref));
             
             $this->ticket->is_synced = 0;
-            $this->ticket->bill_no = "Sync Failed : POS Middleware Connector Down";
+            //$this->ticket->bill_no = "Sync Failed : POS Middleware Connector Down";
             $this->ticket->save();
             $this->ticket->logActivity("Sync Failed : POS Middleware Connector Down");
             
