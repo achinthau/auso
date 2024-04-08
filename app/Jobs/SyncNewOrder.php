@@ -45,7 +45,7 @@ class SyncNewOrder implements ShouldQueue
 
         $email = config('app.debug') ? "macorera@gmail.com" : "callcenter.kottugrand@gmail.com";
       
-
+        $jsonOrderDetails = null;
         try {
           
                 // Assuming $this->ticket['items'] contains the items to be mapped
@@ -114,11 +114,11 @@ class SyncNewOrder implements ShouldQueue
                 "ITEMS" => $itemsMapped
                 
             ];
+            
+            //Log::info('Order Details: ', ['orderDetails' => $orderDetails]);
         
             // Encode the order details as JSON
             $jsonOrderDetails = json_encode($orderDetails);
-                    
-            //Log::info('Order Details :'.$jsonOrderDetails);
 
             $bill_no = $this->ticket['bill_no'];
             $parts = explode('-', $bill_no);
