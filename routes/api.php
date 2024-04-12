@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PosOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,26 @@ Route::get('/items', function (Request $request) {
         )
         ->get();
 })->name('api.items.index');
+
+Route::get('/items_new', function (Request $request) {
+    return ItemMaster::query()
+        // ->join('cities','cities.id','hotels.city_id')
+        ->selectRaw("id,descr,CONCAT ('Rs. ',ROUND(retail1,2)) as description ")
+        ->orderBy('descr')
+        ->whereIn('item_status', [1, 2])
+        ->when(
+            $request->search,
+            fn (Builder $query) => $query
+                ->where('descr', 'like', "%{$request->search}%")
+                ->orWhere('barcode', 'like', "%{$request->search}%")
+        )
+        ->when(
+            $request->exists('selected'),
+            fn (Builder $query) => $query->whereIn('id', $request->selected),
+            fn (Builder $query) => $query->limit(10)
+        )
+        ->get();
+})->name('api.items.index_new');
 
 Route::post('/call-answered', function (StoreAnsweredCall $request) {
     Log::info($request);
@@ -98,3 +119,18 @@ Route::post('/call-disconnected', function (Request $request) {
         Cache::decrement($request['queuename']."-current-call-count");
     }
 });
+
+
+Route::post('/update-order-info',  function (Request $request) {
+   // $data = $request->json()->all();
+
+    // Update order status in your database
+    // $order = Order::findOrFail($data['order_id']);
+    // $order->status = $data['status'];
+    // $order->save();
+
+    return response()->json(['message' => 'Order status updated successfully']);
+
+});
+
+ Route::post('/order/status_update', [PosOrderController::class, 'store']);

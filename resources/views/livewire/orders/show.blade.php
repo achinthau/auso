@@ -14,10 +14,10 @@
                         <div>Priority : </div>
                     @endif
                     @if ($ticket->ticket_category_id != 3)
-                        <div>Category : {{ $ticket->category->title }}</div>
+                        <div>Category : {{ $ticket->category->title ? : '' }}</div>
                     @endif
                     <div>{{ $ticket->ticket_category_id == 3 ? 'Delivery  Type ' : 'Sub Category' }} :
-                        {{ $ticket->subCategory->title }}</div>
+                        {{ $ticket->subCategory->title ? : '' }}</div>
 
                     <div class="flex space-x-2">
                         <div> {{ $ticket->ticket_category_id == 3 ? 'Payment Methods ' : 'Tags' }} :</div>
@@ -36,15 +36,16 @@
                         <div> Order Ref : {{ $ticket->order_ref }}</div>
                     @endif
 
-                    <div> Outlet : {{ $ticket->outlet->title }}</div>
+                    <div> Outlet : {{ $ticket->outlet->title ? : '' }}</div>
                     <div> Pickup At : {{ $ticket->standard_due_at }}</div>
                     <div>
                         @canany(['is-has-outlet', 'client-admin', 'is-super-admin'])
                             @if ($ticket->ticket_status_id == 1 && !$ticket->is_synced)
                                 <x-input placeholder="Order Ref" wire:model.defer="orderRef" />
+                                <!-- Move the Outlet Order Ref inside the condition -->
+                                Outlet Order Ref: {{ $ticket->bill_no }}
                             @endif
                         @endcanany
-                        Outlet Order Ref :{{ $ticket->bill_no }}
                     </div>
                 </div>
                 @if ($ticket->description)

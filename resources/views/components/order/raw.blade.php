@@ -1,9 +1,10 @@
 <div class="flex space-x-2" wire:key="{{$key}}">
     <div class="w-1/4 flex">
-       
-        <x-select wire:model="ticketItems.{{ $index }}.item_id" placeholder="Select Items" class="flex-1"
-            :async-data="route('api.items.index')" option-label="descr" option-value="id" />
+    <x-select wire:model="ticketItems.{{ $index }}.item_id" placeholder="Select Items" class="flex-1"
+        :async-data="route('api.items.index')" option-label="descr" option-value="id" />
     </div>
+    <!-- <div>Outlet Item Type: {{ $outletItemType ?? 'default_value' }}</div> -->
+
     <div class="text-sm w-1/12  text-center my-auto">
         {{number_format($ticketItem['unit_price'],2)}}
     </div>
@@ -13,6 +14,11 @@
     <div class="text-sm w-1/12  text-center my-auto">
         {{number_format($ticketItem['unit_price'] * $ticketItem['qty'],2)}}
     </div>
+
+    <div class="text-sm w-2/12 ">
+        <input type="text" wire:model.defer="ticketItems.{{ $index }}.item_remarks" class="form-control" placeholder="Item Remarks" maxlength="30">
+    </div>
+
     <div class="text-sm w-1/12  flex space-x-4  justify-right my-auto">
         <div class="my-auto cursor-pointer">
             <svg wire:click="removeItem({{ $index }})" class="w-6 h-6 text-gray-400 hover:text-red-500"

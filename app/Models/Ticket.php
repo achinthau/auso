@@ -23,6 +23,11 @@ class Ticket extends Model
         // 'tags' => []
     ];
 
+    protected $fillable=[
+        'order_ref',    	
+    ];
+
+
     protected $casts = [
         'tags' => 'array'
     ];

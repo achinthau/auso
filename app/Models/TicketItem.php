@@ -17,6 +17,7 @@ class TicketItem extends Model
     	'unit_price',
     	'line_total',
     	'parent_item_id',
+		'item_remarks',
     ];
 
 

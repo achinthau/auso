@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Orders;
 
 use App\Events\NotifyOrder;
 use App\Jobs\SyncOrder;
+use App\Jobs\SyncNewOrder;
 use App\Models\Item;
 use App\Models\ItemMaster;
 use App\Models\Outlet;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 use WireUi\Traits\Actions;
+use Illuminate\Support\Facades\Log;
 
 class Create extends Component
 {
@@ -33,6 +35,11 @@ class Create extends Component
     public $tags;
     public $creatingOrder = false;
     public $total = 0.0;
+    public $selectedOutletId;
+    public $outlet_item_type;
+    public $selectedOutlet;
+    public $generateBillNo;
+
 
     protected $listeners = ['showCreatingOrder' => 'showCreatingOrder'];
 
@@ -76,13 +83,14 @@ class Create extends Component
         $this->ticket = new Ticket;
         $this->ticket->lead_id = $leadId;
 
+        $this->selectedOutlet = Outlet::first();
+        $this->outlet_item_type = $this->selectedOutlet->outlet_item_type;   
+        
         $this->categories = TicketCategory::with('subCategories')->order()->first();
         $this->subCategories = $this->categories->subCategories;
         $this->tags = [];
         $this->outlets = Outlet::select('id', 'title')->get();
         $this->items = Item::select('id', 'title', 'description')->get()->toArray();
-
-
 
         $this->addItem();
     }
@@ -145,6 +153,7 @@ class Create extends Component
             'size_id' => null,
             'unit_price' => 0.0,
             'qty' => 1,
+            'item_remarks' => '', 
         ];
 
         if (!is_numeric($parent)) {
@@ -172,7 +181,6 @@ class Create extends Component
 
     public function updatedTicketItems($value, $name)
     {
-        // dd($name);
         $field = explode('.', $name);
 
         if ($field[1] == 'item_id') {
@@ -207,20 +215,30 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate();
-        if ($this->ticket->ticket_category_id == 3 && $this->ticket->crm) {
+
+    $this->validate([ 
+    'ticket.description' => 'required_if:ticket.ticket_category_id,1,2',
+    'selectedOutletId' => 'required|integer|min:1|exists:outlets,id',
+    'ticket.ticket_category_id' => 'required|exists:ticket_categories,id',
+    'ticket.ticket_sub_category_id' => 'required|exists:ticket_sub_categories,id',
+    'ticket.tags' => 'required|array|min:1',
+    ]);
+        
+        // $this->validate();
+        if ($this->ticket->ticket_category_id == 3 && $this->ticket->crm == 1) {
             $this->validate([
                 'ticketItems.*.item_id' => 'required',
-
             ]);
         }
+
         $this->ticket->topic = $this->ticket->ticket_category_id == 3 ? "Order" : $this->ticket->topic;
         $this->ticket->lead_id = $this->leadId;
-
-
-        // dd($this->ticket);
+        $this->ticket->outlet_id = $this->selectedOutletId;
+        $this->generateBillNo = $this->generateBillNo($this->ticket->outlet_id);
+        $this->ticket->bill_no = $this->generateBillNo;
+        Log::debug($this->ticket->bill_no);
         $this->ticket->save();
-
+        
         $this->ticket->logActivity("Created");
 
         if ($this->ticket->ticket_category_id == 3 && $this->ticket->crm) {
@@ -235,6 +253,7 @@ class Create extends Component
                         'qty'  => $_ticketItem['qty'],
                         'unit_price'  => $_ticketItem['unit_price'],
                         'line_total'  => $_ticketItem['unit_price'] * $_ticketItem['qty'],
+                        'item_remarks'  => $_ticketItem['item_remarks'],
                     ]
                 );
 
@@ -255,13 +274,15 @@ class Create extends Component
                 }
             }
         }
-        // $this->ticket->createPosOrder();
-        // Artisan::queue("sync:order " . $this->ticket->id);
-        //SyncOrder::dispatch($this->ticket)->onQueue('high');
 
         $order = Ticket::with('lead', 'category', 'subCategory', 'items', 'items.item', 'outlet')->where('id', $this->ticket->id)->first();
-        SyncOrder::dispatch($order)->onQueue('high');
-        
+       
+        // return;
+        // Log::info($jsonOrderDetails);
+       
+        // Log::info($response);
+        SyncNewOrder::dispatch($order)->onQueue('high');
+             
 
         $this->creatingOrder = false;
         $this->resetForm();
@@ -294,4 +315,29 @@ class Create extends Component
         $this->resetErrorBag();
         $this->resetValidation();
     }
+
+
+    public function updatedTicketOutletId($value)
+    {
+        if ($value) {
+            // Logic to handle outlet change
+            // For example, load items from the main database based on the selected outlet
+        }
+    }
+
+
+    public function generateBillNo($outletId)
+    {
+        // Count the number of existing tickets for the given outlet_id and topic 'order'
+        $ticketCount = Ticket::where('topic', 'order')
+                            ->where('outlet_id', $outletId)
+                            ->count();
+
+        // The next bill number is the current count plus 1
+        $nextBillNo = $outletId . '-' . ($ticketCount + 1);
+
+        return $nextBillNo;
+    }
+
+
 }

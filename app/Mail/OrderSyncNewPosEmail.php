@@ -2,26 +2,33 @@
 
 namespace App\Mail;
 
+use App\Models\Ticket;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TestMail extends Mailable
+class OrderSyncNewPosEmail extends Mailable
 {
     use Queueable, SerializesModels;
+
+    public Ticket $ticket;
+    public $subject;
+    public $isSuccess;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($order, $reference)
+    public function __construct(Ticket $ticket, $subject, $isSuccess = 0)
     {
-        $this->order_id = $order;
-        $this->reference = $reference;
+        $this->ticket = $ticket;
+        $this->subject = $subject;
+        $this->isSuccess = $isSuccess;
     }
 
     /**
@@ -32,7 +39,9 @@ class TestMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Test Mail',
+            from: new Address('crmalerts.inittech@gmail.com', 'Auso New Order Alert'),
+            cc: ['crmalerts.inittech@gmail.com'],
+            subject: $this->subject,
         );
     }
 
@@ -44,8 +53,8 @@ class TestMail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'mails.test-mail',
-            with: ['order' => $this->order_id, 'reference' => $this->reference],
+            markdown: 'mails.order-new-sync-email',
+            with: ['subject' => $this->subject, 'ticket' => $this->ticket, 'isSuccess' => $this->isSuccess],
         );
     }
 

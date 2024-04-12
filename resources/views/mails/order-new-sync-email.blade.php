@@ -1,14 +1,14 @@
 <x-mail::message>
 @if ($isSuccess)
-Pickup Order # : {{$ticket->bill_no}}
+Pickup Order # : {{$ticket?->bill_no}}
 @else        
 # Pickup Order Failed
 @endif
 
 ## Order Details
-- **Order Number:** {{ $ticket->order_ref }}
+- **Order Number:** {{ $ticket->bill_no }}
 - **Order Date:** {{ $ticket->created_at }}
-- **Order Pickup:** {{ $ticket->due_at }}
+- **Order Pickup:** {{ $ticket?->due_at }}
 - **Outlet:** {{ $ticket->outlet?->title }} - {{ $ticket->outlet?->contact_no }}
 - **Customer Name:** {{ $ticket->lead->full_name }}
 - **Contact Number:** {{ $ticket->lead->contact_number }}
