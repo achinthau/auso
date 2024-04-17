@@ -29,6 +29,7 @@ class StoreAnsweredCall extends FormRequest
             'ani'=>'required',
             'dnis'=>'required',
             'agent'=>'required',
+            'skill_id'=>'required',
         ];
     }
 }
