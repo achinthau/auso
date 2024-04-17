@@ -72,10 +72,11 @@ Route::get('/items_new', function (Request $request) {
 Route::post('/call-answered', function (StoreAnsweredCall $request) {
     Log::info($request);
     $lead = Lead::where('contact_number', $request['ani'])->first();
-    $agent = Agent::where('extension', $request['agent'])->first();
-    $skill = Skill::where('skillname', $request['queuename'])->first();
-    Cache::forever('agent-in-call-' . $agent->id, 1);
-    Cache::forever('call-' . $request['unique_id'], $agent->id);
+    // $agent = Agent::where('extension', $request['agent'])->first();
+    $user = User::where('extension', $request['agent'])->first();
+    // $skill = Skill::where('skillname', $request['queuename'])->first();
+    Cache::forever('agent-in-call-' . $user->agent_id, 1);
+    Cache::forever('call-' . $request['unique_id'], $user->agent_id);
 
     Cache::add('current-call-count', 0, 99999999);
     Cache::add($request['queuename']."-current-call-count", 0, 99999999);
@@ -85,23 +86,24 @@ Route::post('/call-answered', function (StoreAnsweredCall $request) {
 
 
     if (!$lead) {
-        if ($agent) {
+        if ($user) {
             $lead = new Lead;
             $lead->contact_number = $request['ani'];
             $lead->unique_id = $request['unique_id'];
-            $lead->agent_id = $agent->id;
+            $lead->agent_id = $user->agent_id;
             $lead->extension = $request['agent'];
-            $lead->skill_id = $skill->skillid;
+            // $lead->skill_id = $skill->skillid;
+            $lead->skill_id = $request['skill_id'];
             $lead->status_id = 1;
             $lead->save();
             event(new CallAnswered($lead->id));
             return $lead;
         }
     } else {
-        $agent = Agent::where('extension', $request['agent'])->first();
-        $lead->agent_id = $agent->id;
+        // $agent = Agent::where('extension', $request['agent'])->first();
+        $lead->agent_id = $user->agent_id;
         $lead->extension = $request['agent'];
-        $lead->skill_id = $skill->skillid;
+        $lead->skill_id = $request['skill_id'];
         $lead->save();
         event(new CallAnswered($lead->id));
         return $lead;
