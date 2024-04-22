@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Api\PosOrder; 
 use App\Models\Ticket;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class PosOrderController extends Controller
 {
