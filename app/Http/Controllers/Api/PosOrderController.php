@@ -50,8 +50,8 @@ class PosOrderController extends Controller
                 'tran_type' => $request['TranType'] ?? null,
                 'data' => json_encode($request['Data'] ?? []),
 	            'res_type' =>$request['ResType'] ?? null,
-	            'retry_count' => $request['RetryCount'] ?? null ,
-            ]);
+	            'retry_count' => $request['RetryCount'] ?? null,
+            ]);
 
             if ($order->save()) { // Save the order
                 // Return a success response
