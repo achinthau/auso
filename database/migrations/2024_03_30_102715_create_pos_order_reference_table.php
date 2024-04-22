@@ -31,6 +31,8 @@ return new class extends Migration
             $table->string('loc_id')->nullable();
             $table->string('tran_type')->nullable();
             $table->json('data')->nullable();
+            $table->string('res_type')->nullable();
+            $table->string('retry_count')->nullable();
             $table->timestamps();
         });
     }
