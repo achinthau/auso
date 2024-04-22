@@ -40,7 +40,7 @@ class PosOrderController extends Controller
                 'sender_id' => $request['SenderId'],
                 'receiver_id' => $request['ReceiverId'],
                 'order_status' => $request['OrderStatus'],
-                'success' => $request['Success'],
+                'success' => 1,
                 'message' => $request['Message'] ?? null,
                 'tran_date' => $request['TranDate'] ?? null,
                 'tran_time' => $request['TranTime'] ?? null,
