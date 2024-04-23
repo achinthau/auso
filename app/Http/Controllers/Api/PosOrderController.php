@@ -24,11 +24,11 @@ class PosOrderController extends Controller
                 'ReceiverId' => 'required|string',
             ]);
 
-            if ($request->OrderStatus === 'received') {
-                $ticket = Ticket::where('bill_no', $request->ReceiverId)->first();
+            if ($request->OrderStatus === 'ordersaved') {
+                $ticket = Ticket::where('bill_no', $request->OrderRef)->first();
 
                 if ($ticket) {
-                    $ticket->update(['order_ref' => $request->OrderRef]);
+                    $ticket->update(['order_ref' => $request->BillRef]);
                 }
             }
 
@@ -36,11 +36,11 @@ class PosOrderController extends Controller
             $order = new PosOrder([
                 'function' => $validatedData['Function'] ?? null,
                 'tran_id' => $validatedData['TranId'] ?? null,
-                'order_ref' => $validatedData['OrderRef'],
+                'order_ref' => $validatedData['OrderRef'] ?? null,
                 'bill_ref' => $validatedData['BillRef'] ?? null,
-                'sender_id' => $request['SenderId'],
-                'receiver_id' => $request['ReceiverId'],
-                'order_status' => $request['OrderStatus'],
+                'sender_id' => $request['SenderId'] ?? null,
+                'receiver_id' => $request['ReceiverId'] ?? null,
+                'order_status' => $request['OrderStatus'] ?? null,
                 'success' => 1,
                 'message' => $request['Message'] ?? null,
                 'tran_date' => $request['TranDate'] ?? null,

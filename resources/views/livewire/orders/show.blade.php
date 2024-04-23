@@ -32,8 +32,8 @@
                             class="text-2xs text-gray-400">{{ $ticket->created_at }}</span>
                     </div>
 
-                    @if ($ticket->ticket_category_id == 3 && !$ticket->crm)
-                        <div> Order Ref : {{ $ticket->order_ref }}</div>
+                    @if ($ticket->ticket_category_id == 3 && $ticket->crm)
+                        <div> Bill Ref : {{ $ticket->order_ref }}</div>
                     @endif
 
                     <div> Outlet : {{ $ticket->outlet->title ? : '' }}</div>

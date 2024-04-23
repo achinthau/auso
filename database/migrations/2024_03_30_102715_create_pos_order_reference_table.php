@@ -17,12 +17,12 @@ return new class extends Migration
             $table->id();
             $table->string('function')->nullable();
             $table->string('tran_id')->nullable();
-            $table->string('order_ref');
+            $table->string('order_ref')->nullable();
             $table->string('bill_ref')->nullable();
-            $table->string('sender_id');
-            $table->string('receiver_id');
-            $table->string('order_status');
-            $table->boolean('success');
+            $table->string('sender_id')->nullable();
+            $table->string('receiver_id')->nullable();
+            $table->string('order_status')->nullable();
+            $table->boolean('success')->nullable();
             $table->text('message')->nullable();
             $table->date('tran_date')->nullable();
             $table->time('tran_time')->nullable();

@@ -32,7 +32,7 @@
                     {{ $ticket->lead->first_name }}
                 </div>
             </div>
-            <div class="flex space-x-1 justify-end">
+            <div class="flex space-x-1 justify-end items-center">
                 
                 @if ($ticket->is_synced || ($ticket->ticket_status_id > 1 && $ticket->bill_no))
                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
@@ -42,11 +42,31 @@
                     </svg>
                     <div class="text-xs my-auto">
                         Bill # : {{ $ticket->bill_no }}
-                    </div>
+                    </div>             
                 @endif
             </div>
         @endif
     </div>
+
+    <div class="grid grid-cols-2 text-gray-500">
+    @if ($ticket->order_ref != null)
+        <div class="col-span-2 flex justify-between items-center space-x-4">
+            <!-- Placeholder for additional left-aligned elements -->
+            <div class="flex-1">
+                <!-- Additional elements can be added here if needed -->
+            </div>
+
+            <!-- Right-aligned Bill Ref information -->
+            @if ($ticket->is_synced || ($ticket->ticket_status_id > 1 && $ticket->bill_no))
+                <div class="text-xs">
+                    Bill Ref: {{ $ticket->order_ref }}
+                </div>
+            @endif
+        </div>
+    @endif
+</div>
+
+
     <div class="grid grid-cols-2 text-gray-500 h-4">
 
         <div class="flex space-x-1">
