@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Api\PosOrder; 
 use App\Models\Ticket;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class PosOrderController extends Controller
 {
@@ -23,11 +24,11 @@ class PosOrderController extends Controller
                 'ReceiverId' => 'required|string',
             ]);
 
-            if ($request->OrderStatus === 'received') {
-                $ticket = Ticket::where('bill_no', $request->ReceiverId)->first();
+            if ($request->OrderStatus === 'ordersaved') {
+                $ticket = Ticket::where('bill_no', $request->OrderRef)->first();
 
                 if ($ticket) {
-                    $ticket->update(['order_ref' => $request->OrderRef]);
+                    $ticket->update(['order_ref' => $request->BillRef]);
                 }
             }
 
@@ -35,12 +36,12 @@ class PosOrderController extends Controller
             $order = new PosOrder([
                 'function' => $validatedData['Function'] ?? null,
                 'tran_id' => $validatedData['TranId'] ?? null,
-                'order_ref' => $validatedData['OrderRef'],
+                'order_ref' => $validatedData['OrderRef'] ?? null,
                 'bill_ref' => $validatedData['BillRef'] ?? null,
-                'sender_id' => $request['SenderId'],
-                'receiver_id' => $request['ReceiverId'],
-                'order_status' => $request['OrderStatus'],
-                'success' => $request['Success'],
+                'sender_id' => $request['SenderId'] ?? null,
+                'receiver_id' => $request['ReceiverId'] ?? null,
+                'order_status' => $request['OrderStatus'] ?? null,
+                'success' => 1,
                 'message' => $request['Message'] ?? null,
                 'tran_date' => $request['TranDate'] ?? null,
                 'tran_time' => $request['TranTime'] ?? null,
@@ -49,6 +50,8 @@ class PosOrderController extends Controller
                 'loc_id' => $request['LocId'] ?? null,
                 'tran_type' => $request['TranType'] ?? null,
                 'data' => json_encode($request['Data'] ?? []),
+	            'res_type' =>$request['ResType'] ?? null,
+	            'retry_count' => $request['RetryCount'] ?? null,
             ]);
 
             if ($order->save()) { // Save the order
